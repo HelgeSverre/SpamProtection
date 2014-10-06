@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * Class used for spam prevention, primarily in contact forms, but can also be used in forum software and comment fields.
  *
@@ -15,8 +13,6 @@ class SpamProtection {
 	private $AllowTor = false;
 	private $APIUrl = "http://api.stopforumspam.org/api?f=json";
 	private $APIKey;
-
-
 
 
 	/**
@@ -42,6 +38,7 @@ class SpamProtection {
 			throw new Exception("API Check Unsuccsessfull");
 		}
 	}
+
 
 	/**
 	 * Internal function used to query the StopForumSpam API for an Email address.
@@ -150,6 +147,7 @@ class SpamProtection {
 		$this->AllowTor = $bool;
 	}
 
+
 	/**
 	 * Function used to set your API key, this is only neccesary if you need the ability to submit spam reports.
 	 *
@@ -161,6 +159,7 @@ class SpamProtection {
 		$this->APIKey = $APIKey;
 	}
 
+
 	/**
 	 * returns the api key
 	 *
@@ -169,10 +168,11 @@ class SpamProtection {
 	 * @return string the set api key, throws an exception on failure.
 	 */
 	public function GetAPIKey() {
-		if (isset($this->APIKey))
-			return $this->APIKey;
-		else
+		if (isset($this->APIKey)){
+			return $this->APIKey;	
+		} else {
 			throw new Exception("API Key not set, cannot return empty api key.");
+		}
 	}
 }
 ?>
