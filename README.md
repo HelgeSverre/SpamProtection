@@ -7,7 +7,7 @@ API Keys to use with this class can be obtained here: http://www.stopforumspam.c
 
 ## Usage
 
-```
+```php
 require('SpamProtection.php');
 
 // Instantiate a new SpamProtection object
