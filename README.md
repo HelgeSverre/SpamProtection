@@ -29,3 +29,10 @@ echo $SpamProtecter->CheckIP("8.8.8.8");
 echo $SpamProtecter->CheckEmail("helge.sverre@gmail.com");
 
 ```
+
+
+### Spam Log
+If you want to see this script's success rate and how much it's helping me, take a 
+look at this logfile: http://helgesverre.com/mail.log all attempts at sending email 
+from a blocked IP is saved in this file, ignore entries before 2014-10-06 10:38:21 
+they were catched with a manual filter.
