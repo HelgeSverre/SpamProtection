@@ -155,7 +155,7 @@ class SpamProtection {
 	 *
 	 * @author  Helge Sverre <email@helgesverre.com>
 	 *
-	 * @param string $APIKey your API key, can be obtained from here: http://www.stopforumspam.com/keys
+	 * @param string $APIKey your API key, can be obtained from here: http://www.stopforumspam.com/signup
 	 */
 	public function SetAPIKey($APIKey) {
 		$this->APIKey = $APIKey;
