@@ -1,5 +1,5 @@
 # SpamProtection
-### PHP Spam Protection Class for use in Contact forms and Comment Fields
+#### PHP Spam Protection Class for use in Contact forms and Comment Fields
 
 
 API Keys to use with this class can be obtained here: http://www.stopforumspam.com/signup
