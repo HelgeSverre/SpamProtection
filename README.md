@@ -17,18 +17,25 @@ $SpamProtecter = new SpamProtection();
 // Set the API key.
 $SpamProtecter->SetAPIKey("YOUR-API-KEY"); 
 
-// Display the API Key.
-$SpamProtecter->GetAPIKey(); 
+// Display the API key if it exists. (you wouldn't actually do this normally..)
+echo $SpamProtecter->GetAPIKey(); 
 
 // Allow or disallow TOR Exit Node IP's
 $SpamProtecter->AllowTor(false);
 
 // Check if the IP 8.8.8.8 is in the spam database
-echo $SpamProtecter->CheckIP("8.8.8.8");
+if ($SpamProtecter->CheckIP("8.8.8.8")) {
+  die("ACCESS DENIED");
+} else {
+  // you may enter...
+}
 
-// Check if the Email "helge.sverre@gmail.com" is in the spam database.
-echo $SpamProtecter->CheckEmail("helge.sverre@gmail.com");
-
+// Check if the Email "spam@example.com" is in the spam database.
+if ($SpamProtecter->CheckEmail("spam@example.com") {
+  die("ACCESS DENIED");
+} else {
+  // you may enter...
+}
 ```
 
 
