@@ -3,7 +3,7 @@
 
 
 API Keys to use with this class can be obtained here: http://www.stopforumspam.com/signup
-
+Having an API Key is only neccesary if you are going to use the SubmitReport() function.
 
 ## Usage
 
