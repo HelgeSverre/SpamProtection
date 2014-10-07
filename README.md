@@ -25,16 +25,16 @@ $SpamProtecter->AllowTor(false);
 
 // Check if the IP 8.8.8.8 is in the spam database
 if ($SpamProtecter->CheckIP("8.8.8.8")) {
-  die("ACCESS DENIED");
+ 	die("ACCESS DENIED");
 } else {
-  // you may enter...
+	// you may enter...
 }
 
 // Check if the Email "spam@example.com" is in the spam database.
 if ($SpamProtecter->CheckEmail("spam@example.com") {
-  die("ACCESS DENIED");
+	die("ACCESS DENIED");
 } else {
-  // you may enter...
+	// you may enter...
 }
 ```
 
