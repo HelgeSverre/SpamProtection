@@ -9,6 +9,7 @@ Having an API Key is only neccesary if you are going to use the SubmitReport() f
 ## Usage
 
 ```php
+<?php
 require('SpamProtection.php');
 
 // Instantiate a new SpamProtection object
@@ -36,6 +37,8 @@ if ($SpamProtecter->CheckEmail("spam@example.com") {
 } else {
 	// you may enter...
 }
+
+?>
 ```
 
 
