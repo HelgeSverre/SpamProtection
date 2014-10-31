@@ -38,6 +38,13 @@ if ($SpamProtecter->CheckEmail("spam@example.com") {
 	// you may enter...
 }
 
+// Submit a spam report 
+$sent = $SpamProtecter->SubmitReport("vehicle271", "113.116.60.187", "http://pastebin.com/HL9aC5UC", "vehicle271@163.com") {
+if ($sent) {
+	echo "Spam report has been sent";
+} else {
+	echo "Could not send spam report, unknown error";
+}
 ?>
 ```
 
