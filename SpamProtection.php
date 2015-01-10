@@ -125,8 +125,7 @@ class SpamProtection {
 		. "&email="	 	. urlencode($email)
 		. "&api_key=" 	. urlencode($this->APIKey);
 
-		die($Request);
-		//$Response = file_get_contents($Request);
+		$Response = file_get_contents($Request);
 
 		if (!strpos($Response, "data submitted successfully") === FALSE) {
 			return true;
