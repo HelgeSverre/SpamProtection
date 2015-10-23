@@ -5,6 +5,14 @@ API Keys to use with this class can be obtained here: http://www.stopforumspam.c
 
 Having an API Key is only necessary if you are going to use the submitReport() function.
 
+## Installation 
+
+```
+composer require helgesverre/spamprotection
+```
+
+
+
 ## Usage
 
 Example.php
