@@ -13,22 +13,19 @@ namespace Helge\SpamProtection;
 class SpamProtection
 {
 
-
     protected $allowTorNodes = false;
-
     protected $baseApiUrl = "http://api.stopforumspam.org/api";
-
     protected $apiKey;
-
     protected $frequencyThreshold;
-
     protected $curlEnabled;
 
+    // Convenience constants for various Thresholds
     const THRESHOLD_STRICT = 1;
     const THRESHOLD_HIGH = 3;
     const THRESHOLD_MEDIUM = 5;
     const THRESHOLD_LOW = 10;
 
+    // Convenience constants for allowing or disallowing Tor Exit nodes
     const TOR_ALLOW = true;
     const TOR_DISALLOW = false;
 
