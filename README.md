@@ -1,57 +1,45 @@
 # SpamProtection
 PHP Spam Protection Class for use in Contact forms and Comment Fields
 
-[![Get help on Codementor](https://cdn.codementor.io/badges/get_help_github.svg)](https://www.codementor.io/helgesverre)
-
 API Keys to use with this class can be obtained here: http://www.stopforumspam.com/signup
 
-Having an API Key is only neccesary if you are going to use the SubmitReport() function.
+Having an API Key is only necessary if you are going to use the submitReport() function.
 
 ## Usage
 
+Example.php
+
 ```php
 <?php
-require('SpamProtection.php');
+use Helge\SpamProtection\SpamProtection;
+use Helge\SpamProtection\Types;
 
-// Instantiate a new SpamProtection object
-$SpamProtecter = new SpamProtection();
+require 'vendor/autoload.php';
 
-// Set the API key.
-$SpamProtecter->SetAPIKey("YOUR-API-KEY"); 
+$spamProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT, SpamProtection::TOR_DISALLOW);
 
-// Display the API key if it exists. (you wouldn't actually do this normally..)
-echo $SpamProtecter->GetAPIKey(); 
 
-// Allow or disallow TOR Exit Node IP's
-$SpamProtecter->AllowTor(false);
+/** 
+ * All checks can be called form the check() method, 
+ * first param is the type of check, second is the value (ip, email, username)
+ */
+var_dump($spamProtector->check(Types::EMAIL, "helge.sverre"));
+var_dump($spamProtector->check(Types::IP, "8.8.8.8"));
+var_dump($spamProtector->check(Types::USERNAME, "helgesverre"));
 
-// Check if the IP 8.8.8.8 is in the spam database
-if ($SpamProtecter->CheckIP("8.8.8.8")) {
- 	die("ACCESS DENIED");
-} else {
-	// you may enter...
-}
+/**
+ * For convenience some wrapper methods are provided, 
+ * they simply pass the data long to check()
+ */
+var_dump($spamProtector->checkEmail("helge.sverre@gmail.com"));
+var_dump($spamProtector->checkIP("8.8.8.8"));
+var_dump($spamProtector->checkUsername("spammer"));
 
-// Check if the Email "spam@example.com" is in the spam database.
-if ($SpamProtecter->CheckEmail("spam@example.com") {
-	die("ACCESS DENIED");
-} else {
-	// you may enter...
-}
 
-// Submit a spam report 
-$sent = $SpamProtecter->SubmitReport("vehicle271", "113.116.60.187", "http://pastebin.com/HL9aC5UC", "vehicle271@163.com") {
-if ($sent) {
-	echo "Spam report has been sent";
-} else {
-	echo "Could not send spam report, unknown error";
-}
-?>
 ```
 
 
-### Spam Log
-If you want to see this script's success rate and how much it's helping me, take a 
-look at this logfile: http://helgesverre.com/mail.log all attempts at sending email 
-from a blocked IP is saved in this file, ignore entries before 2014-10-06 10:38:21 
-they were catched with a manual filter.
+
+# License
+
+MIT licenced

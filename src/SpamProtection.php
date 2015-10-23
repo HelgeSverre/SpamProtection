@@ -13,9 +13,28 @@ namespace Helge\SpamProtection;
 class SpamProtection
 {
 
+    /**
+     * @var bool whether or not to treat Tor Exit nodes as Spam
+     */
     protected $allowTorNodes = false;
+
+
+    /**
+     * @var string the base url for the StopForumSpam api, if this ever changes, just change this string
+     */
     protected $baseApiUrl = "http://api.stopforumspam.org/api";
+
+
+    /**
+     * @var string the API key for StopForumSpam.org, it's only neccesary if you want to submit spam reports using submitReport()
+     */
     protected $apiKey;
+
+
+    /**
+     * @var int the frequency of spam reports that a username/email/ip must
+     * have to be considered spam, defaults to THRESHOLD_STRICT, which is 1 spam report
+     */
     protected $frequencyThreshold;
     protected $curlEnabled;
 
@@ -30,7 +49,13 @@ class SpamProtection
     const TOR_DISALLOW = false;
 
 
-    public function __construct($frequencyThreshold = null, $allowTorNodes = null, $apiKey = null)
+    /**
+     * Create a new SpamProtection Object
+     * @param int $frequencyThreshold the frequency of spam reports that a username/email/ip must have to be considered spam, defaults to THRESHOLD_STRICT, which is 1 spam report
+     * @param bool $allowTorNodes (optional) whether or not to treat Tor Exit nodes as spam
+     * @param string $apiKey (optional) Your StopForumSpam.org API key, only neccesary if you plan on using submitReport()
+     */
+    public function __construct($frequencyThreshold = self::THRESHOLD_STRICT, $allowTorNodes = null, $apiKey = null)
     {
         if (!is_null($frequencyThreshold)) {
             $this->frequencyThreshold = $frequencyThreshold;
@@ -49,6 +74,12 @@ class SpamProtection
     }
 
 
+    /**
+     * Builds the URL for the spam check queries
+     * @param string $type ip|email|username the type of spam to check $value for
+     * @param string $value the ip, email or username to check for spam reports
+     * @return string the full url to the api
+     */
     protected function buildUrl($type, $value)
     {
         $type = trim(strtolower($type));
@@ -69,6 +100,11 @@ class SpamProtection
     }
 
 
+    /**
+     * Sends a simple GET request to a URL and returns the response
+     * @param string $url the url to send a GET request to
+     * @return mixed
+     */
     protected function sendRequest($url)
     {
 
