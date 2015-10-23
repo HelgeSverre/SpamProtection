@@ -1,0 +1,35 @@
+{
+  "name": "helgesverre/spamprotection",
+  "description": "A Spam Protection class for use in contact forms and comment fields, uses the StopForumSpam API.  ",
+  "version": "1.0.0",
+  "type": "library",
+  "keywords": [
+    "spam",
+    "anti-spam",
+    "protection",
+    "stopforumspam",
+    "api"
+  ],
+  "homepage": "https://helgesverre.com/products/spamprotection",
+  "time": "2015-10-23",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Helge Sverre",
+      "email": "email@helgesverre.com",
+      "homepage": "https://helgesverre.com",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "email@helgesverre.com",
+    "issues": "https://github.com/HelgeSverre/SpamProtection/issues",
+    "source": "https://github.com/HelgeSverre/SpamProtection"
+  },
+  "autoload": {
+    "psr-4": {
+      "Helge\\SpamProtection\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
