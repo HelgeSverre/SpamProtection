@@ -46,7 +46,7 @@ var_dump($spamProtector->checkUsername("spammer"));
 ```
 the check methods returns a bool, where TRUE means the IP/Email/Username has been flagged as spam.
 
-If you want to specify a "threshold" of ho many spam reports are needed before something is flagged as spam you can use the ```setFrequencyThreshold()``` method or specify a threshold in the constructor:
+If you want to specify a "threshold" of how many spam reports are needed before something is flagged as spam you can use the ```setFrequencyThreshold()``` method or specify a threshold in the constructor:
 
 ```php
 <?php
@@ -67,6 +67,7 @@ $spamProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT);
 
 // or 
 
+$spamProtector = new SpamProtection();
 $spamProtector->setFrequencyThreshold(SpamProtection::THRESHOLD_HIGH);
 
 ```
@@ -92,6 +93,7 @@ $spamProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT, SpamProtec
 
 // or 
 
+$spamProtector = new SpamProtection();
 $spamProtector->setAllowTorNodes(false);
 ```
 
