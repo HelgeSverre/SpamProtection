@@ -31,7 +31,7 @@ $spamProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT, SpamProtec
  * All checks can be called form the check() method, 
  * first param is the type of check, second is the value (ip, email, username)
  */
-var_dump($spamProtector->check(Types::EMAIL, "helge.sverre"));
+var_dump($spamProtector->check(Types::EMAIL, "helge.sverre@gmail.com"));
 var_dump($spamProtector->check(Types::IP, "8.8.8.8"));
 var_dump($spamProtector->check(Types::USERNAME, "helgesverre"));
 
