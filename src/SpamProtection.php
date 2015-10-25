@@ -2,6 +2,9 @@
 
 namespace Helge\SpamProtection;
 
+// TODO(25 okt 2015) ~ Helge: Add support for setting a certaincy threshold
+// TODO(25 okt 2015) ~ Helge: add support for a "last seen" cutoff
+
 /**
  * Class used for spam prevention, primarily in contact forms, but can also be used in forum software and comment fields.
  *
@@ -134,7 +137,11 @@ class SpamProtection
             $json = json_decode($response);
 
             if ($json->success == 1) {
-                return $json->{$type}->frequency >= $this->frequencyThreshold ? true : false;
+                if ($json->{$type}->appears == 1) {
+                    return $json->{$type}->frequency >= $this->frequencyThreshold ? true : false;
+                } else {
+                    return false;
+                }
             }
         } else {
             throw new \Exception("API Check Unsuccessful");
