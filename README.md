@@ -1,14 +1,19 @@
 # SpamProtection
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Software License][ico-license]](LICENSE.md)
+[![Total Downloads][ico-downloads]][link-downloads]
+
+
 PHP Spam Protection Class for use in Contact forms and Comment Fields
 
 API Keys to use with this class can be obtained here: http://www.stopforumspam.com/signup
 
 Having an API Key is only necessary if you are going to use the submitReport() function.
 
-## Installation 
+## Install 
 
-```
-composer require helgesverre/spamprotection
+``` bash
+$ composer require helgesverre/spamprotection
 ```
 
 
@@ -98,6 +103,15 @@ $spamProtector->setAllowTorNodes(false);
 ```
 
 
-# License
 
-MIT licenced
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+[ico-version]: https://img.shields.io/packagist/v/helgesverre/spamprotection.svg?style=flat-square
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/helgesverre/spamprotection.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/helgesverre/spamprotection
+[link-downloads]: https://packagist.org/packages/helgesverre/spamprotection
+[link-author]: https://github.com/helgesverre
