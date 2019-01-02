@@ -25,7 +25,7 @@ class SpamProtection
     /**
      * @var string the base url for the StopForumSpam api, if this ever changes, just change this string
      */
-    protected $baseApiUrl = "http://api.stopforumspam.org/api";
+    protected $baseApiUrl = "https://api.stopforumspam.org/api";
 
 
     /**
