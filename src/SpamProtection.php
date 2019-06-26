@@ -2,7 +2,6 @@
 
 namespace Helge\SpamProtection;
 
-// TODO(25 okt 2015) ~ Helge: Add support for setting a certaincy threshold
 // TODO(25 okt 2015) ~ Helge: add support for a "last seen" cutoff
 
 /**
@@ -41,11 +40,22 @@ class SpamProtection
     protected $frequencyThreshold;
     protected $curlEnabled;
 
+    /**
+     * @var int the confidence that the the username/email/ip is spam, defaults to false,
+     * which means any confidence level
+     */
+    protected $confidenceThreshold = false;
+
     // Convenience constants for various Thresholds
     const THRESHOLD_STRICT = 1;
     const THRESHOLD_HIGH = 3;
     const THRESHOLD_MEDIUM = 5;
     const THRESHOLD_LOW = 10;
+
+    const CONFIDENCE_STRICT = 99;
+    const CONFIDENCE_HIGH = 80;
+    const CONFIDENCE_MEDIUM = 40;
+    const CONFIDENCE_LOW = 10;
 
     // Convenience constants for allowing or disallowing Tor Exit nodes
     const TOR_ALLOW = true;
@@ -58,7 +68,7 @@ class SpamProtection
      * @param bool $allowTorNodes (optional) whether or not to treat Tor Exit nodes as spam
      * @param string $apiKey (optional) Your StopForumSpam.org API key, only neccesary if you plan on using submitReport()
      */
-    public function __construct($frequencyThreshold = self::THRESHOLD_STRICT, $allowTorNodes = null, $apiKey = null)
+    public function __construct($frequencyThreshold = self::THRESHOLD_STRICT, $allowTorNodes = null, $apiKey = null, $confidenceThreshold = null)
     {
         if (!is_null($frequencyThreshold)) {
             $this->frequencyThreshold = $frequencyThreshold;
@@ -70,6 +80,10 @@ class SpamProtection
 
         if (!is_null($apiKey)) {
             $this->apiKey = $apiKey;
+        }
+
+        if (!is_null($confidenceThreshold)) {
+            $this->confidenceThreshold = $confidenceThreshold;
         }
 
         // Check if curl is enabled
@@ -133,19 +147,30 @@ class SpamProtection
         $fullApiUrl = $this->buildUrl($type, $value);
         $response = $this->sendRequest($fullApiUrl);
 
-        if ($response) {
-            $json = json_decode($response);
-
-            if ($json->success == 1) {
-                if ($json->{$type}->appears == 1) {
-                    return $json->{$type}->frequency >= $this->frequencyThreshold ? true : false;
-                } else {
-                    return false;
-                }
-            }
-        } else {
+        if (! $response) {
             throw new \Exception("API Check Unsuccessful");
         }
+
+        $json = json_decode($response);
+        if (!$json || !is_object($json)) {
+            throw new \Exception("API Check Unsuccessful");
+        }
+        // var_dump($json->{$type}->frequency, $json->{$type}->confidence);
+        if ($json->success == 1 && $json->{$type}->appears == 1) {
+            // Frequency Threshold check
+            if ($json->{$type}->frequency < $this->frequencyThreshold) {
+                return false;
+            }
+
+            // Run Confidence Threshold check
+            if ($this->confidenceThreshold && $json->{$type}->confidence < $this->confidenceThreshold) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
 
