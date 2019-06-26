@@ -25,3 +25,11 @@ var_dump($spamProtector->checkUsername("spammer2"));
 var_dump($spamProtector->checkUsername("spammer3"));
 
 var_dump($spamProtector->checkUsername("spammer4"));
+
+
+/* Confidence Threshold */
+
+// If the frequency is less than the frequency threshold - Return as not spam
+// If the frequency is more than the frequency threshold, but the confidence is less than the confidence threshold - Return as not spam
+// If the frequency is more than the frequency threshold and the confidence is more than the confidence threshold - Return as spam
+$spamProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT, SpamProtection::TOR_DISALLOW, null, SpamProtection::CONFIDENCE_LOW);
