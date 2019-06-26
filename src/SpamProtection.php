@@ -147,7 +147,7 @@ class SpamProtection
         $fullApiUrl = $this->buildUrl($type, $value);
         $response = $this->sendRequest($fullApiUrl);
 
-        if (! $response) {
+        if (!$response) {
             throw new \Exception("API Check Unsuccessful");
         }
 
@@ -155,7 +155,7 @@ class SpamProtection
         if (!$json || !is_object($json)) {
             throw new \Exception("API Check Unsuccessful");
         }
-        // var_dump($json->{$type}->frequency, $json->{$type}->confidence);
+
         if ($json->success == 1 && $json->{$type}->appears == 1) {
             // Frequency Threshold check
             if ($json->{$type}->frequency < $this->frequencyThreshold) {
