@@ -5,6 +5,7 @@ parameters:
         - tests
     excludePaths:
         - vendor
+        - tests/Pest.php
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
@@ -15,3 +16,10 @@ parameters:
         -
             message: '#Access to an undefined property object::\$\w+#'
             path: src/SpamProtection.php
+        -
+            message: '#Undefined variable: \$this#'
+            path: tests
+        -
+            message: '#Call to an undefined method Pest\\.*#'
+            paths:
+                - tests
