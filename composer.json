@@ -47,9 +47,39 @@
   },
   "scripts": {
     "test": "vendor/bin/phpunit",
+    "test:coverage": "vendor/bin/phpunit --coverage-text --coverage-html=coverage",
+    "test:unit": "vendor/bin/phpunit --testsuite='SpamProtection Test Suite' --exclude-group=integration",
+    "test:integration": "vendor/bin/phpunit --group=integration",
     "phpstan": "vendor/bin/phpstan analyse src tests --level=8",
+    "phpstan:baseline": "vendor/bin/phpstan analyse src tests --level=8 --generate-baseline",
     "cs-fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
-    "cs-check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff"
+    "cs-check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff",
+    "format": "@cs-fix",
+    "lint": "@cs-check",
+    "qa": [
+      "@cs-check",
+      "@phpstan",
+      "@test"
+    ],
+    "qa:fix": [
+      "@cs-fix",
+      "@phpstan",
+      "@test"
+    ]
+  },
+  "scripts-descriptions": {
+    "test": "Run all tests",
+    "test:coverage": "Run tests with code coverage report",
+    "test:unit": "Run unit tests only (excludes integration tests)",
+    "test:integration": "Run integration tests only",
+    "phpstan": "Run static analysis with PHPStan",
+    "phpstan:baseline": "Generate PHPStan baseline file",
+    "cs-fix": "Fix code style issues automatically",
+    "cs-check": "Check for code style issues without fixing",
+    "format": "Alias for cs-fix - format code",
+    "lint": "Alias for cs-check - check code style",
+    "qa": "Run all quality assurance checks (lint, static analysis, tests)",
+    "qa:fix": "Run QA with automatic fixes where possible"
   },
   "minimum-stability": "stable"
 }

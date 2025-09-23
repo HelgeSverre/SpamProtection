@@ -21,16 +21,30 @@ Key architectural patterns:
 
 ## Development Commands
 
-This is a simple PHP library without build tools. Common development tasks:
+Common development commands for working with this library:
 
 ```bash
 # Install dependencies
 composer install
 
-# Run the example
-php example.php
+# Run tests
+composer test                 # All tests
+composer test:unit            # Unit tests only
+composer test:integration     # Integration tests only
+composer test:coverage        # Tests with coverage report
 
-# Test manually by modifying example.php values
+# Code quality
+composer format              # Auto-fix code style
+composer lint                # Check code style
+composer phpstan             # Run static analysis
+composer qa                  # Run all QA checks
+composer qa:fix              # Run QA with fixes
+
+# Alternative: Use make commands
+make help                    # Show all available commands
+make test
+make format
+make qa
 ```
 
 ## Configuration Options

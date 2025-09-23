@@ -138,30 +138,79 @@ try {
 }
 ```
 
-## Testing
+## Development
 
-Run the test suite:
+### Available Commands
+
+This project includes both Composer scripts and a Makefile for common development tasks:
+
+#### Testing
 
 ```bash
+# Run all tests
 composer test
+# or
+make test
+
+# Run tests with code coverage
+composer test:coverage
+# or
+make test-coverage
+
+# Run only unit tests
+composer test:unit
+# or
+make test-unit
+
+# Run only integration tests
+composer test:integration
+# or
+make test-integration
 ```
 
-Run static analysis:
+#### Code Quality
 
 ```bash
+# Check code style (no changes)
+composer lint
+# or
+make lint
+
+# Fix code style automatically
+composer format
+# or
+make format
+
+# Run static analysis with PHPStan
 composer phpstan
+# or
+make phpstan
+
+# Run all QA checks (lint, static analysis, tests)
+composer qa
+# or
+make qa
+
+# Run QA with automatic fixes where possible
+composer qa:fix
+# or
+make qa-fix
 ```
 
-Check code style:
+#### Other Commands
 
 ```bash
-composer cs-check
-```
+# Install dependencies
+make install
 
-Fix code style:
+# Update dependencies
+make update
 
-```bash
-composer cs-fix
+# Clean build artifacts
+make clean
+
+# Show all available make commands
+make help
 ```
 
 ## Migrating from v1.x to v2.0
