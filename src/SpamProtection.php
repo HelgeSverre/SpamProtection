@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Helge\SpamProtection;
 
-// TODO(25 okt 2015) ~ Helge: add support for a "last seen" cutoff
+use Helge\SpamProtection\Exception\ApiCheckException;
+use Helge\SpamProtection\Exception\ApiKeyMissingException;
+use Helge\SpamProtection\Exception\SubmissionFailedException;
 
 /**
  * Class used for spam prevention, primarily in contact forms, but can also be used in forum software and comment fields.
@@ -147,12 +151,12 @@ class SpamProtection
         $response = $this->sendRequest($fullApiUrl);
 
         if (!$response) {
-            throw new \Exception("API Check Unsuccessful");
+            throw new ApiCheckException();
         }
 
         $json = json_decode($response);
         if (!$json || !is_object($json)) {
-            throw new \Exception("API Check Unsuccessful");
+            throw new ApiCheckException();
         }
 
         if ((int)$json->success === 1 && (int)$json->{$type->value}->appears === 1) {
@@ -177,8 +181,8 @@ class SpamProtection
      * Function used to query the StopForumSpam API for an IP address and return if it is registered as a spamer IP.
      *
      * @param string $ip the IP address to search the API for.
-     * @throws \Exception
-     * @return bool true if IP is associated with spam, false if not, throws an \Exception on failure
+     * @throws ApiCheckException
+     * @return bool true if IP is associated with spam, false if not
      */
     public function checkIP(string $ip): bool
     {
@@ -190,8 +194,8 @@ class SpamProtection
      * Function used to query the StopForumSpam API for an Email address and return if it is registered as a spam email.
      *
      * @param string $email the Email address to search the API for.
-     * @return bool true means the IP is a spammy email, if false, it's not, throws an \Exception on failure
-     *@throws \Exception
+     * @throws ApiCheckException
+     * @return bool true means the email is spam, false if not
      */
     public function checkEmail(string $email): bool
     {
@@ -200,11 +204,11 @@ class SpamProtection
 
 
     /**
-     * Function used to query the StopForumSpam API for an Email address and return if it is registered as a spam email.
+     * Function used to query the StopForumSpam API for a username and return if it is registered as spam.
      *
-     * @param string $username the Email address to search the API for.
-     * @return bool true means the IP is a spammy email, if false, it's not, throws an \Exception on failure
-     *@throws \Exception
+     * @param string $username the username to search the API for.
+     * @throws ApiCheckException
+     * @return bool true means the username is spam, false if not
      */
     public function checkUsername(string $username): bool
     {
@@ -215,22 +219,23 @@ class SpamProtection
     /**
      * Function used to submit a spam report to StopForumSpam,
      *
+     * @author  Helge Sverre <email@helgesverre.com>
      * @param string $username Username of the spammer.
      * @param string $ip the ip of the spammer
      * @param string $evidence evidence of spam, usually you pass it a copy of the original email(with all the headers etc).
      * @param string $email the spammer's email.
-     * @return bool returns true if report was submitted, \Exception on failure.
-     *@author  Helge Sverre <email@helgesverre.com>
-     *
+     * @throws ApiKeyMissingException
+     * @throws SubmissionFailedException
+     * @return bool returns true if report was submitted
      */
     public function submitReport(string $username, string $ip, string $evidence, string $email): bool
     {
 
         if (!$this->apiKey) {
-            throw new \Exception("To submit a spam report you need an API Key");
+            throw new ApiKeyMissingException();
         }
 
-        $apiUrl = "http://www.stopforumspam.com/add.php"
+        $apiUrl = "https://www.stopforumspam.com/add.php"
             . "?username=" . urlencode($username)
             . "&ip_addr=" . urlencode($ip)
             . "&evidence=" . urlencode($evidence)
@@ -242,7 +247,7 @@ class SpamProtection
         if (preg_match('/data submitted successfully/', $response)) {
             return true;
         } else {
-            throw new \Exception("Submission failed.");
+            throw new SubmissionFailedException();
         }
     }
 

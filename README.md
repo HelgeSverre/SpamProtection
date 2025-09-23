@@ -1,19 +1,26 @@
 # SpamProtection
+
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
+![CI Status](https://github.com/HelgeSverre/SpamProtection/actions/workflows/ci.yml/badge.svg)
 
+A modern PHP 8.1+ spam protection library using the StopForumSpam API for contact forms and comment fields.
 
-PHP Spam Protection Class for use in Contact forms and Comment Fields
+**Version 2.0** brings modern PHP features including strict typing, enums, custom exceptions, and comprehensive testing.
 
-API Keys to use with this class can be obtained here: http://www.stopforumspam.com/signup
+API Keys can be obtained here: https://www.stopforumspam.com/signup (only required for the submitReport() function)
 
-Having an API Key is only necessary if you are going to use the submitReport() function.
+## Requirements
 
-## Install 
+- PHP 8.1 or higher
+- ext-curl
+- ext-json
+
+## Install
 
 ``` bash
-$ composer require helgesverre/spamprotection
+composer require helgesverre/spamprotection
 ```
 
 
@@ -24,8 +31,12 @@ Example.php
 
 ```php
 <?php
+
+declare(strict_types=1);
+
 use Helge\SpamProtection\SpamProtection;
 use Helge\SpamProtection\Types;
+use Helge\SpamProtection\Exception\ApiCheckException;
 
 require 'vendor/autoload.php';
 
@@ -102,7 +113,75 @@ $spamProtector = new SpamProtection();
 $spamProtector->setAllowTorNodes(false);
 ```
 
+## Exception Handling
 
+Version 2.0 introduces custom exceptions for better error handling:
+
+```php
+use Helge\SpamProtection\Exception\ApiCheckException;
+use Helge\SpamProtection\Exception\ApiKeyMissingException;
+use Helge\SpamProtection\Exception\SubmissionFailedException;
+
+try {
+    $isSpam = $spamProtector->checkEmail("test@example.com");
+} catch (ApiCheckException $e) {
+    // Handle API connection or response errors
+    error_log("API check failed: " . $e->getMessage());
+}
+
+try {
+    $spamProtector->submitReport($username, $ip, $evidence, $email);
+} catch (ApiKeyMissingException $e) {
+    // API key is required but not configured
+} catch (SubmissionFailedException $e) {
+    // Submission to StopForumSpam failed
+}
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+composer test
+```
+
+Run static analysis:
+
+```bash
+composer phpstan
+```
+
+Check code style:
+
+```bash
+composer cs-check
+```
+
+Fix code style:
+
+```bash
+composer cs-fix
+```
+
+## Migrating from v1.x to v2.0
+
+### Breaking Changes
+
+1. **PHP Version**: Requires PHP 8.1 or higher
+2. **Types Class**: Now an enum instead of a class with constants
+3. **Type Declarations**: All methods have strict type declarations
+4. **Exceptions**: Custom exceptions replace generic \Exception
+
+### Migration Example
+
+```php
+// v1.x
+$spamProtector->check("email", "test@example.com");
+
+// v2.0
+$spamProtector->check(Types::EMAIL, "test@example.com");
+```
 
 ## License
 
