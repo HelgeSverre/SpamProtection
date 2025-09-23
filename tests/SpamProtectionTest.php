@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Helge\SpamProtection\Tests;
 
-use Helge\SpamProtection\SpamProtection;
-use Helge\SpamProtection\Types;
-use Helge\SpamProtection\Exception\ApiCheckException;
 use Helge\SpamProtection\Exception\ApiKeyMissingException;
-use Helge\SpamProtection\Exception\SubmissionFailedException;
+use Helge\SpamProtection\SpamProtection;
 use PHPUnit\Framework\TestCase;
 
 class SpamProtectionTest extends TestCase
@@ -90,11 +87,6 @@ class SpamProtectionTest extends TestCase
     public function testCheckIPWithValidIP(): void
     {
         $this->markTestSkipped('Integration test - requires network access to StopForumSpam API');
-
-        // This would test with a known spam IP from StopForumSpam database
-        // Only run this in integration test environment
-        $result = $this->spamProtection->checkIP('127.0.0.1');
-        $this->assertIsBool($result);
     }
 
     /**
@@ -103,11 +95,6 @@ class SpamProtectionTest extends TestCase
     public function testCheckEmailWithValidEmail(): void
     {
         $this->markTestSkipped('Integration test - requires network access to StopForumSpam API');
-
-        // This would test with a known email from StopForumSpam database
-        // Only run this in integration test environment
-        $result = $this->spamProtection->checkEmail('test@example.com');
-        $this->assertIsBool($result);
     }
 
     /**
@@ -116,10 +103,5 @@ class SpamProtectionTest extends TestCase
     public function testCheckUsernameWithValidUsername(): void
     {
         $this->markTestSkipped('Integration test - requires network access to StopForumSpam API');
-
-        // This would test with a known username from StopForumSpam database
-        // Only run this in integration test environment
-        $result = $this->spamProtection->checkUsername('testuser');
-        $this->assertIsBool($result);
     }
 }

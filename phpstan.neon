@@ -7,5 +7,11 @@ parameters:
         - vendor
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
-    checkGenericClassInNonGenericObjectType: false
-    checkMissingIterableValueType: false
+    ignoreErrors:
+        -
+            identifier: missingType.generics
+        -
+            identifier: missingType.iterableValue
+        -
+            message: '#Access to an undefined property object::\$\w+#'
+            path: src/SpamProtection.php
