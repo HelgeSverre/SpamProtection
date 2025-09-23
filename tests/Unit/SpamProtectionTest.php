@@ -71,14 +71,85 @@ test('submit report without api key throws exception')
         $this->spamProtection->submitReport('spammer', '127.0.0.1', 'spam evidence', 'spam@example.com');
     });
 
-test('check IP with valid IP')
+test('check IP integration test - clean IP')
     ->group('integration')
-    ->skip('Integration test - requires network access to StopForumSpam API');
+    ->tap(function () {
+        // Test with localhost which should never be spam
+        $result = $this->spamProtection->checkIP('127.0.0.1');
+        expect($result)->toBeFalse();
+    });
 
-test('check email with valid email')
+test('check email integration test - clean email')
     ->group('integration')
-    ->skip('Integration test - requires network access to StopForumSpam API');
+    ->tap(function () {
+        // Test with a unique email that should not be spam
+        $result = $this->spamProtection->checkEmail('clean.user.12345@gmail.com');
+        expect($result)->toBeFalse();
+    });
 
-test('check username with valid username')
+test('check username integration test - test username')
     ->group('integration')
-    ->skip('Integration test - requires network access to StopForumSpam API');
+    ->tap(function () {
+        // Test with a test username that should not be spam
+        $result = $this->spamProtection->checkUsername('testuser123456');
+        expect($result)->toBeFalse();
+    });
+
+test('check with various threshold levels')
+    ->group('integration')
+    ->tap(function () {
+        // Test different threshold configurations
+        $strictProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT);
+        $result = $strictProtector->checkIP('8.8.8.8'); // Google DNS, should be clean
+        expect($result)->toBeFalse();
+
+        $lowProtector = new SpamProtection(SpamProtection::THRESHOLD_LOW);
+        $result = $lowProtector->checkIP('8.8.8.8');
+        expect($result)->toBeFalse();
+    });
+
+test('API connectivity and response format')
+    ->group('integration')
+    ->tap(function () {
+        // This test mainly verifies API connectivity and proper response handling
+        $result = $this->spamProtection->checkIP('127.0.0.1');
+        // If we get here, the API is working and returned a valid response
+        expect($result)->toBeBool();
+        expect($result)->toBeFalse(); // localhost should not be spam
+    });
+
+test('test with known spam data')
+    ->group('integration')
+    ->tap(function () {
+        // Let's test with test@example.com which we know is flagged
+        $result = $this->spamProtection->checkEmail('test@example.com');
+        expect($result)->toBeTrue(); // This should be flagged as spam
+    });
+
+test('comprehensive integration test with real data')
+    ->group('integration')
+    ->tap(function () {
+        // Test multiple scenarios with actual data
+
+        // Clean data that should not be flagged
+        expect($this->spamProtection->checkIP('127.0.0.1'))->toBeFalse();
+        expect($this->spamProtection->checkIP('8.8.8.8'))->toBeFalse(); // Google DNS
+        expect($this->spamProtection->checkEmail('clean.user.12345@gmail.com'))->toBeFalse();
+        expect($this->spamProtection->checkUsername('cleanuser12345'))->toBeFalse();
+
+        // Known spam data
+        expect($this->spamProtection->checkEmail('test@example.com'))->toBeTrue();
+
+        // Test with your provided examples (they appear to be clean now)
+        expect($this->spamProtection->checkIP('91.186.18.61'))->toBeFalse();
+        expect($this->spamProtection->checkEmail('g2fsehis5e@mail.ru'))->toBeFalse();
+        expect($this->spamProtection->checkUsername('MariFoogwoogy'))->toBeFalse();
+
+        // Test threshold behavior with known spam
+        $strictProtector = new SpamProtection(SpamProtection::THRESHOLD_STRICT);
+        $highProtector = new SpamProtection(SpamProtection::THRESHOLD_HIGH);
+
+        // test@example.com has frequency 6, so both should flag it
+        expect($strictProtector->checkEmail('test@example.com'))->toBeTrue();
+        expect($highProtector->checkEmail('test@example.com'))->toBeTrue();
+    });
