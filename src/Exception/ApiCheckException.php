@@ -12,8 +12,8 @@ use Throwable;
  */
 class ApiCheckException extends Exception
 {
-    public function __construct(int $code = 0, ?Throwable $previous = null)
+    public function __construct(int $code = 0, ?Throwable $previous = null, ?string $detail = null)
     {
-        parent::__construct('API Check Unsuccessful', $code, $previous);
+        parent::__construct('API Check Unsuccessful' . ($detail === null ? '' : ': ' . $detail), $code, $previous);
     }
 }

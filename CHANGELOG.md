@@ -1,61 +1,61 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [2.0.0] - 2026-10-15
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [2.0.0] - 2025
-
-### Breaking Changes
-- Minimum PHP version requirement raised to 8.1
-- `Types` class converted to PHP enum
-- All public methods now have strict type declarations
-- Custom exceptions replace generic \Exception throws
-- Method signatures updated with proper type hints
+### Breaking changes
+- Require PHP 8.1+, ext-curl, and ext-json.
+- Replace the `Types` constants class with a string-backed enum. Pass `Types::EMAIL`,
+  `Types::IP`, or `Types::USERNAME` to `check()` instead of a string.
+- Add strict parameter, property, and return types.
+- Throw custom exceptions for API checks, missing API keys, and failed submissions.
+- Throw on API rejections and malformed spam scores instead of treating them as clean.
 
 ### Added
-- Custom exception classes for better error handling:
-  - `ApiCheckException` - thrown when API check fails
-  - `ApiKeyMissingException` - thrown when API key is required but missing
-  - `SubmissionFailedException` - thrown when spam report submission fails
-- PHPUnit test suite with comprehensive test coverage
-- GitHub Actions CI/CD pipeline for automated testing
-- Support for PHP 8.1, 8.2, and 8.3
-- PHPStan static analysis at level 8
-- PHP CS Fixer for code style consistency
-- Composer scripts for testing and code quality checks
+- Descriptive API failure messages with chained transport and JSON exceptions.
+- Deterministic PHPUnit tests for spam decisions, thresholds, URL encoding, errors,
+  submission responses, and both cURL and stream transports.
+- Separate read-only live API smoke tests.
+- Use patched PHPUnit 10.5.62+ in place of Pest 2, which pins an affected PHPUnit version.
+- GitHub Actions checks on PHP 8.1 through 8.5, PHPStan 2 level 8, and PHP CS Fixer.
+- Composer scripts and Makefile targets for development checks.
 
 ### Changed
-- Types class is now an enum with proper type safety
-- All methods have strict type declarations and return types
-- Properties have proper type declarations
-- Constants changed from `const` to `public const`
-- Submit report endpoint uses HTTPS instead of HTTP
-- Improved PHPDoc blocks with accurate exception annotations
-
-### Removed
-- Hardcoded version from composer.json
-- Support for PHP < 8.1
-- TODO comment about "last seen" cutoff (moved to issues)
+- Submit spam reports over HTTPS and request structured JSON responses, while
+  retaining support for the original HTML success response.
+- Bound HTTP request duration and report connection failures and HTTP error codes.
+- Redact the configured API key from returned API error messages.
+- Remove the hardcoded Composer version and release time so metadata comes from Git.
 
 ### Fixed
-- Composer validation warnings
-- Security: submitReport now uses HTTPS endpoint
-- Improved error handling with specific exceptions
+- Test configuration referenced an absent `tests/Feature` directory.
+- Default tests and CI depended on changing live spam records.
 
-## [1.1.0] - 2019
+### Contributors
+- Raimondas Rimkevičius (MekDrop): PHP 8.1 modernization (#7), Composer version fix
+  (#8), and custom exceptions (#9). Original commits are retained in Git history.
+
+## [1.2.0] - 2019-06-26
+
 ### Added
-- Confidence threshold support (PR #6)
+- Confidence threshold support (#6).
 
-## [1.0.1] - 2018
+## [1.1.1] - 2019-01-02
+
 ### Changed
-- API requests now use HTTPS (PR #4)
+- Use HTTPS for API checks (#4). The 1.1.0 and 1.1.1 tags point to the same commit.
 
-## [1.0.0] - 2015
+## [1.0.1] - 2018-07-30
+
+- Published the 1.0.1 release on GitHub; its tag points to a 2015 commit.
+
+## [1.0.0] - 2015-10-23
+
 ### Added
-- Initial release
-- Support for checking IPs, emails, and usernames
-- Frequency threshold configuration
-- Tor exit node detection
-- Spam report submission
+- Initial release: IP, email, and username checks, frequency thresholds, Tor exit
+  node handling, and spam report submission.
+
+[2.0.0]: https://github.com/HelgeSverre/SpamProtection/compare/1.2.0...2.0.0
+[1.2.0]: https://github.com/HelgeSverre/SpamProtection/releases/tag/1.2.0
+[1.1.1]: https://github.com/HelgeSverre/SpamProtection/releases/tag/1.1.1
+[1.0.1]: https://github.com/HelgeSverre/SpamProtection/releases/tag/1.0.1
+[1.0.0]: https://github.com/HelgeSverre/SpamProtection/releases/tag/1.0.0

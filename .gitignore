@@ -7,3 +7,4 @@ phpunit.xml.bak
 .DS_Store
 coverage/
 build/
+.claude/

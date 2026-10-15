@@ -20,7 +20,7 @@ API Keys can be obtained here: https://www.stopforumspam.com/signup (only requir
 ## Install
 
 ``` bash
-composer require helgesverre/spamprotection
+composer require helgesverre/spamprotection:^2.0
 ```
 
 
@@ -138,7 +138,19 @@ try {
 }
 ```
 
+API exceptions distinguish transport failures, invalid JSON, malformed results, and API rejections.
+Transport and JSON failures retain the original exception in `$e->getPrevious()`.
+Returned API error messages redact the configured API key. HTTP requests have a
+5-second cURL connection timeout and a 15-second request timeout (15 seconds for streams).
+
 ## Development
+
+Run `composer install`, then `composer qa`. The default test suite uses fixed API
+responses and a local HTTP server; it makes no calls to StopForumSpam.
+`composer test:integration` runs read-only live checks for IPs, emails, and usernames.
+These smoke tests check response handling without assuming that database records stay
+clean or flagged. `composer test:all` runs both suites. Live checks are also available
+through the CI workflow's manual `live_api` option.
 
 ### Available Commands
 
@@ -147,7 +159,7 @@ This project includes both Composer scripts and a Makefile for common developmen
 #### Testing
 
 ```bash
-# Run all tests
+# Run deterministic tests (no external API calls)
 composer test
 # or
 make test
@@ -162,7 +174,7 @@ composer test:unit
 # or
 make test-unit
 
-# Run only integration tests
+# Run live API smoke tests
 composer test:integration
 # or
 make test-integration
@@ -220,7 +232,7 @@ make help
 1. **PHP Version**: Requires PHP 8.1 or higher
 2. **Types Class**: Now an enum instead of a class with constants
 3. **Type Declarations**: All methods have strict type declarations
-4. **Exceptions**: Custom exceptions replace generic \Exception
+4. **Exceptions**: Custom exceptions replace generic \Exception; API rejections and malformed spam scores throw instead of returning a clean result
 
 ### Migration Example
 
@@ -231,6 +243,14 @@ $spamProtector->check("email", "test@example.com");
 // v2.0
 $spamProtector->check(Types::EMAIL, "test@example.com");
 ```
+
+## Contributors
+
+Thanks to [Raimondas Rimkevičius (MekDrop)](https://github.com/MekDrop) for the PHP 8.1
+modernization, Composer version fix, and custom exceptions in PRs
+[#7](https://github.com/HelgeSverre/SpamProtection/pull/7),
+[#8](https://github.com/HelgeSverre/SpamProtection/pull/8), and
+[#9](https://github.com/HelgeSverre/SpamProtection/pull/9).
 
 ## License
 

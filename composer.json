@@ -1,6 +1,6 @@
 {
   "name": "helgesverre/spamprotection",
-  "description": "A Spam Protection class for use in contact forms and comment fields, uses the StopForumSpam API.  ",
+  "description": "A Spam Protection class for use in contact forms and comment fields, uses the StopForumSpam API.",
   "type": "library",
   "keywords": [
     "spam",
@@ -10,7 +10,6 @@
     "api"
   ],
   "homepage": "https://helgesverre.com/products/spamprotection",
-  "time": "2015-10-23",
   "license": "MIT",
   "require": {
     "php": ">=8.1",
@@ -41,19 +40,19 @@
     }
   },
   "require-dev": {
-    "pestphp/pest": "^2.0",
-    "phpstan/phpstan": "^1.10",
-    "friendsofphp/php-cs-fixer": "^3.0"
+    "phpstan/phpstan": "^2.2",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpunit/phpunit": "^10.5.62"
   },
   "scripts": {
-    "test": "vendor/bin/pest",
-    "test:coverage": "vendor/bin/pest --coverage --coverage-html=coverage",
-    "test:unit": "vendor/bin/pest --exclude-group=integration",
-    "test:integration": "vendor/bin/pest --group=integration",
-    "phpstan": "vendor/bin/phpstan analyse src tests --level=8",
-    "phpstan:baseline": "vendor/bin/phpstan analyse src tests --level=8 --generate-baseline",
-    "cs-fix": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
-    "cs-check": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff",
+    "test": "@test:unit",
+    "test:coverage": "@php vendor/bin/phpunit --exclude-group=integration --coverage-html=coverage",
+    "test:unit": "@php vendor/bin/phpunit --exclude-group=integration",
+    "test:integration": "@php vendor/bin/phpunit --group=integration",
+    "phpstan": "@php vendor/bin/phpstan analyse src tests --level=8",
+    "phpstan:baseline": "@php vendor/bin/phpstan analyse src tests --level=8 --generate-baseline",
+    "cs-fix": "@php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
+    "cs-check": "@php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff",
     "format": "@cs-fix",
     "lint": "@cs-check",
     "qa": [
@@ -65,13 +64,14 @@
       "@cs-fix",
       "@phpstan",
       "@test"
-    ]
+    ],
+    "test:all": "@php vendor/bin/phpunit"
   },
   "scripts-descriptions": {
-    "test": "Run all Pest tests",
-    "test:coverage": "Run Pest tests with code coverage report",
+    "test": "Run deterministic tests (no external API calls)",
+    "test:coverage": "Run deterministic tests with code coverage report",
     "test:unit": "Run unit tests only (excludes integration tests)",
-    "test:integration": "Run integration tests only",
+    "test:integration": "Run live StopForumSpam API smoke tests",
     "phpstan": "Run static analysis with PHPStan",
     "phpstan:baseline": "Generate PHPStan baseline file",
     "cs-fix": "Fix code style issues automatically",
@@ -79,12 +79,8 @@
     "format": "Alias for cs-fix - format code",
     "lint": "Alias for cs-check - check code style",
     "qa": "Run all quality assurance checks (lint, static analysis, tests)",
-    "qa:fix": "Run QA with automatic fixes where possible"
+    "qa:fix": "Run QA with automatic fixes where possible",
+    "test:all": "Run deterministic tests and live API smoke tests"
   },
-  "minimum-stability": "stable",
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
-  }
+  "minimum-stability": "stable"
 }

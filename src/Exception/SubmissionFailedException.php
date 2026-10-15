@@ -12,8 +12,8 @@ use Throwable;
  */
 class SubmissionFailedException extends Exception
 {
-    public function __construct(int $code = 0, ?Throwable $previous = null)
+    public function __construct(int $code = 0, ?Throwable $previous = null, ?string $detail = null)
     {
-        parent::__construct('Submission failed.', $code, $previous);
+        parent::__construct('Submission failed.' . ($detail === null ? '' : ' ' . $detail), $code, $previous);
     }
 }

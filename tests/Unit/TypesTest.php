@@ -2,22 +2,18 @@
 
 declare(strict_types=1);
 
+namespace Helge\SpamProtection\Tests\Unit;
+
+use Helge\SpamProtection\Tests\TestCase;
 use Helge\SpamProtection\Types;
 
-test('email enum value')
-    ->expect(Types::EMAIL->value)->toBe('email');
-
-test('username enum value')
-    ->expect(Types::USERNAME->value)->toBe('username');
-
-test('IP enum value')
-    ->expect(Types::IP->value)->toBe('ip');
-
-test('enum cases')
-    ->tap(function () {
-        $cases = Types::cases();
-        expect($cases)->toHaveCount(3);
-        expect($cases)->toContain(Types::EMAIL);
-        expect($cases)->toContain(Types::USERNAME);
-        expect($cases)->toContain(Types::IP);
-    });
+final class TypesTest extends TestCase
+{
+    public function testEnumValues(): void
+    {
+        self::assertSame('email', Types::EMAIL->value);
+        self::assertSame('username', Types::USERNAME->value);
+        self::assertSame('ip', Types::IP->value);
+        self::assertCount(3, Types::cases());
+    }
+}

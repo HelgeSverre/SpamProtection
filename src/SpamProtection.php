@@ -7,6 +7,8 @@ namespace Helge\SpamProtection;
 use Helge\SpamProtection\Exception\ApiCheckException;
 use Helge\SpamProtection\Exception\ApiKeyMissingException;
 use Helge\SpamProtection\Exception\SubmissionFailedException;
+use JsonException;
+use RuntimeException;
 
 /**
  * Class used for spam prevention, primarily in contact forms, but can also be used in forum software and comment fields.
@@ -125,18 +127,56 @@ class SpamProtection
      */
     protected function sendRequest(string $url): mixed
     {
-
-        $response = null;
-
         if ($this->curlEnabled) {
-
             $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $response = curl_exec($ch);
-            curl_close($ch);
+            if ($ch === false) {
+                throw new RuntimeException('Could not initialize the HTTP request');
+            }
 
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            $response = curl_exec($ch);
+            $error = curl_errno($ch);
+            $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            unset($ch);
+
+            if ($response === false) {
+                // cURL's raw error may contain the request URL and API key.
+                throw new RuntimeException('HTTP request failed: ' . curl_strerror($error), $error);
+            }
         } else {
-            $response = file_get_contents($url);
+            $context = stream_context_create(['http' => [
+                'timeout' => 15,
+                'ignore_errors' => true,
+                'follow_location' => 0,
+            ]]);
+            $stream = @fopen($url, 'rb', false, $context);
+            if ($stream === false) {
+                throw new RuntimeException('Could not connect to the API');
+            }
+
+            try {
+                $response = @stream_get_contents($stream);
+                $metadata = stream_get_meta_data($stream);
+            } finally {
+                fclose($stream);
+            }
+
+            if ($response === false) {
+                throw new RuntimeException('Could not read the API response');
+            }
+
+            $status = 0;
+            foreach ($metadata['wrapper_data'] ?? [] as $header) {
+                if (preg_match('/^HTTP\/\S+ (\d{3})/', $header, $matches)) {
+                    $status = (int) $matches[1];
+                }
+            }
+        }
+
+        if ($status < 200 || $status >= 300) {
+            throw new RuntimeException('API returned HTTP ' . $status, $status);
         }
 
         return $response;
@@ -145,43 +185,60 @@ class SpamProtection
     public function check(Types $type, string $value): bool
     {
         $fullApiUrl = $this->buildUrl($type, $value);
-        $response = $this->sendRequest($fullApiUrl);
-
-        if (!$response) {
-            throw new ApiCheckException();
+        try {
+            $response = $this->sendRequest($fullApiUrl);
+        } catch (RuntimeException $e) {
+            throw new ApiCheckException($e->getCode(), $e, $e->getMessage());
         }
 
-        $json = json_decode($response);
-        if (!$json || !is_object($json)) {
-            throw new ApiCheckException();
+        if (!is_string($response) || $response === '') {
+            throw new ApiCheckException(detail: 'Empty API response');
         }
 
-        // Check if the response has the expected structure
-        if (!property_exists($json, 'success') || !property_exists($json, $type->value)) {
-            throw new ApiCheckException();
+        try {
+            $json = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new ApiCheckException(previous: $e, detail: 'Invalid JSON response');
         }
 
-        $typeData = $json->{$type->value};
-        if (!is_object($typeData) || !property_exists($typeData, 'appears')) {
-            throw new ApiCheckException();
+        if (!is_array($json) || !array_key_exists('success', $json)) {
+            throw new ApiCheckException(detail: 'Missing API success status');
         }
 
-        if ((int) $json->success === 1 && (int) $typeData->appears === 1) {
-            // Frequency Threshold check
-            if (!property_exists($typeData, 'frequency') || $typeData->frequency < $this->frequencyThreshold) {
-                return false;
+        if (!in_array($json['success'], [1, '1', true], true)) {
+            throw new ApiCheckException(detail: $this->apiError($json['error'] ?? null));
+        }
+
+        $typeData = $json[$type->value] ?? null;
+        if (!is_array($typeData) || !array_key_exists('appears', $typeData) ||
+            !in_array($typeData['appears'], [0, '0', false, 1, '1', true], true)) {
+            throw new ApiCheckException(detail: 'Missing or invalid ' . $type->value . ' result');
+        }
+
+        if (in_array($typeData['appears'], [0, '0', false], true)) {
+            return false;
+        }
+
+        if (!isset($typeData['frequency']) || !is_numeric($typeData['frequency']) || $typeData['frequency'] < 0) {
+            throw new ApiCheckException(detail: 'Missing or invalid report frequency');
+        }
+
+        if ($typeData['frequency'] < $this->frequencyThreshold) {
+            return false;
+        }
+
+        if ($this->confidenceThreshold) {
+            if (!isset($typeData['confidence']) || !is_numeric($typeData['confidence']) ||
+                $typeData['confidence'] < 0 || $typeData['confidence'] > 100) {
+                throw new ApiCheckException(detail: 'Missing or invalid confidence score');
             }
 
-            // Run Confidence Threshold check
-            if ($this->confidenceThreshold &&
-                (!property_exists($typeData, 'confidence') || $typeData->confidence < $this->confidenceThreshold)) {
+            if ($typeData['confidence'] < $this->confidenceThreshold) {
                 return false;
             }
-
-            return true;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -253,15 +310,51 @@ class SpamProtection
             . '&ip_addr=' . urlencode($ip)
             . '&evidence=' . urlencode($evidence)
             . '&email=' . urlencode($email)
-            . '&api_key=' . urlencode($this->apiKey);
+            . '&api_key=' . urlencode($this->apiKey)
+            . '&f=json';
 
-        $response = $this->sendRequest($apiUrl);
-
-        if (preg_match('/data submitted successfully/', $response)) {
-            return true;
-        } else {
-            throw new SubmissionFailedException();
+        try {
+            $response = $this->sendRequest($apiUrl);
+        } catch (RuntimeException $e) {
+            throw new SubmissionFailedException($e->getCode(), $e, $e->getMessage());
         }
+
+        if (!is_string($response) || $response === '') {
+            throw new SubmissionFailedException(detail: 'Empty API response');
+        }
+
+        $json = json_decode($response, true);
+        if (is_array($json) && array_key_exists('success', $json)) {
+            if (in_array($json['success'], [1, '1', true], true)) {
+                return true;
+            }
+
+            throw new SubmissionFailedException(detail: $this->apiError($json['error'] ?? null));
+        }
+
+        // Retain compatibility with the API's original HTML success response.
+        if (strtolower(trim(strip_tags($response))) === 'data submitted successfully') {
+            return true;
+        }
+
+        throw new SubmissionFailedException(detail: 'Unexpected API response');
+    }
+
+    private function apiError(mixed $error): string
+    {
+        if (!is_string($error) || trim($error) === '') {
+            return 'API rejected the request';
+        }
+
+        if ($this->apiKey !== null && $this->apiKey !== '') {
+            $error = str_replace(
+                [$this->apiKey, urlencode($this->apiKey), rawurlencode($this->apiKey)],
+                '[redacted]',
+                $error
+            );
+        }
+
+        return substr(trim(preg_replace('/[\x00-\x1F\x7F]+/', ' ', strip_tags($error)) ?? ''), 0, 250);
     }
 
     public function getAllowTorNodes(): bool

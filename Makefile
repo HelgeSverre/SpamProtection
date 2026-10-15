@@ -12,7 +12,7 @@ install: ## Install dependencies
 update: ## Update dependencies
 	composer update
 
-test: ## Run all tests
+test: ## Run deterministic tests
 	composer test
 
 test-coverage: ## Run tests with code coverage
@@ -21,7 +21,7 @@ test-coverage: ## Run tests with code coverage
 test-unit: ## Run unit tests only
 	composer test:unit
 
-test-integration: ## Run integration tests only
+test-integration: ## Run live API smoke tests
 	composer test:integration
 
 lint: ## Check code style (no fixes)
