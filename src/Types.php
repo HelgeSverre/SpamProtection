@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Helge\SpamProtection;
 
-
-class Types
+enum Types: string
 {
-    const EMAIL = "email";
-    const USERNAME = "username";
-    const IP = "ip";
+    case EMAIL = 'email';
+    case USERNAME = 'username';
+    case IP = 'ip';
 }

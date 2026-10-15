@@ -1,2 +1,10 @@
 .idea/
 vendor
+/composer.lock
+.phpunit.cache
+.php-cs-fixer.cache
+phpunit.xml.bak
+.DS_Store
+coverage/
+build/
+.claude/

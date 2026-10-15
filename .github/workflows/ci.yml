@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [master, v2]
+  pull_request:
+    branches: [master, v2]
+  workflow_dispatch:
+    inputs:
+      live_api:
+        description: Run live StopForumSpam smoke tests
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: curl, json
+          coverage: none
+      - name: Validate composer.json
+        run: composer validate --strict
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      - name: Run deterministic tests
+        run: composer test
+      - name: Run live API smoke tests
+        if: github.event_name == 'workflow_dispatch' && inputs.live_api && matrix.php-version == '8.4'
+        run: composer test:integration
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, json
+          coverage: none
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+      - name: Run PHPStan
+        run: composer phpstan
+      - name: Check code style
+        run: composer cs-check

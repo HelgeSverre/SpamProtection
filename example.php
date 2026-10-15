@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Helge\SpamProtection\SpamProtection;
 use Helge\SpamProtection\Types;
 

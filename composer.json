@@ -1,7 +1,6 @@
 {
   "name": "helgesverre/spamprotection",
-  "description": "A Spam Protection class for use in contact forms and comment fields, uses the StopForumSpam API.  ",
-  "version": "1.0.1",
+  "description": "A Spam Protection class for use in contact forms and comment fields, uses the StopForumSpam API.",
   "type": "library",
   "keywords": [
     "spam",
@@ -11,8 +10,12 @@
     "api"
   ],
   "homepage": "https://helgesverre.com/products/spamprotection",
-  "time": "2015-10-23",
   "license": "MIT",
+  "require": {
+    "php": ">=8.1",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
   "authors": [
     {
       "name": "Helge Sverre",
@@ -30,6 +33,54 @@
     "psr-4": {
       "Helge\\SpamProtection\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Helge\\SpamProtection\\Tests\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.2",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "phpunit/phpunit": "^10.5.62"
+  },
+  "scripts": {
+    "test": "@test:unit",
+    "test:coverage": "@php vendor/bin/phpunit --exclude-group=integration --coverage-html=coverage",
+    "test:unit": "@php vendor/bin/phpunit --exclude-group=integration",
+    "test:integration": "@php vendor/bin/phpunit --group=integration",
+    "phpstan": "@php vendor/bin/phpstan analyse src tests --level=8",
+    "phpstan:baseline": "@php vendor/bin/phpstan analyse src tests --level=8 --generate-baseline",
+    "cs-fix": "@php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php",
+    "cs-check": "@php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff",
+    "format": "@cs-fix",
+    "lint": "@cs-check",
+    "qa": [
+      "@cs-check",
+      "@phpstan",
+      "@test"
+    ],
+    "qa:fix": [
+      "@cs-fix",
+      "@phpstan",
+      "@test"
+    ],
+    "test:all": "@php vendor/bin/phpunit"
+  },
+  "scripts-descriptions": {
+    "test": "Run deterministic tests (no external API calls)",
+    "test:coverage": "Run deterministic tests with code coverage report",
+    "test:unit": "Run unit tests only (excludes integration tests)",
+    "test:integration": "Run live StopForumSpam API smoke tests",
+    "phpstan": "Run static analysis with PHPStan",
+    "phpstan:baseline": "Generate PHPStan baseline file",
+    "cs-fix": "Fix code style issues automatically",
+    "cs-check": "Check for code style issues without fixing",
+    "format": "Alias for cs-fix - format code",
+    "lint": "Alias for cs-check - check code style",
+    "qa": "Run all quality assurance checks (lint, static analysis, tests)",
+    "qa:fix": "Run QA with automatic fixes where possible",
+    "test:all": "Run deterministic tests and live API smoke tests"
   },
   "minimum-stability": "stable"
 }
